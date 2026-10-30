@@ -39,5 +39,13 @@ export function createApp(config: RigConfig = loadConfig()) {
     );
   });
 
+  app.get('/api/digest/:night', (c) => {
+    const id = c.req.param('night');
+    // Same night as the page, or the same 404 (ADR 0001: page and JSON never disagree).
+    const night = /^\d{4}-\d{2}-\d{2}$/.test(id) ? readNight(config.runsDir, id) : null;
+    if (!night) return c.json({ error: 'no such night', night: id }, 404);
+    return c.json(night);
+  });
+
   return app;
 }
